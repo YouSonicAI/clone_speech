@@ -2,14 +2,14 @@ import sys
 import numpy as np
 import paddle
 from matplotlib import pyplot as plt
-from IPython import display as ipd
+#from IPython import display as ipd
 import soundfile as sf
 import librosa.display
 from parakeet.utils import display
-
-
+sys.path.append("/data2/queenie/download/Clone_speech/work/Parakeet/examples/tacotron2_aishell3")
+sys.path.append("/data2/queenie/download/Clone_speech/work/Parakeet/")
 from parakeet.models.lstm_speaker_encoder import LSTMSpeakerEncoder
-print(help(LSTMSpeakerEncoder))
+#print(help(LSTMSpeakerEncoder))
 
 from examples.ge2e.audio_processor import SpeakerVerificationPreprocessor
 from parakeet.models.lstm_speaker_encoder import LSTMSpeakerEncoder
@@ -28,7 +28,7 @@ p = SpeakerVerificationPreprocessor(
     min_pad_coverage=0.75,
     partial_overlap_ratio=0.5)
 speaker_encoder = LSTMSpeakerEncoder(n_mels=40, num_layers=3, hidden_size=256, output_size=256)#语音特征的提取
-speaker_encoder_params_path = "/home/aistudio/work/pretrained/ge2e_ckpt_0.3/step-3000000.pdparams"#pretrain 为预训练
+speaker_encoder_params_path = "./ge2e_ckpt_0.3/step-3000000.pdparams"#pretrain 为预训练
 speaker_encoder.set_state_dict(paddle.load(speaker_encoder_params_path))
 speaker_encoder.eval()
 
@@ -64,13 +64,13 @@ synthesizer = Tacotron2(
     d_global_condition=256,
     use_stop_token=False
 )
-params_path = "/home/aistudio/work/pretrained/tacotron2_aishell3_ckpt_0.3/step-450000.pdparams"
+params_path = "./tacotron2_aishell3_ckpt_0.3/step-450000.pdparams"
 synthesizer.set_state_dict(paddle.load(params_path))
 synthesizer.eval()
 
 # vocoder
 from parakeet.models import ConditionalWaveFlow
 vocoder = ConditionalWaveFlow(upsample_factors=[16, 16], n_flows=8, n_layers=8, n_group=16, channels=128, n_mels=80, kernel_size=[3, 3])
-params_path = "/home/aistudio/work/pretrained/waveflow_ljspeech_ckpt_0.3/step-2000000.pdparams"
+params_path = "./waveflow_ljspeech_ckpt_0.3/step-2000000.pdparams"
 vocoder.set_state_dict(paddle.load(params_path))
 vocoder.eval()
